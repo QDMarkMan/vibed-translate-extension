@@ -1,5 +1,11 @@
 # LLM Translator
 
+<img src="icons/icon128.png" width="100" align="right" alt="LLM Translator Icon">
+
+[中文文档](README_zh-CN.md)
+
+A fast LLM-based translation extension created with Vibe Coding
+
 Translate web pages and highlight vocabulary using the power of Large Language Models (LLMs). This Chrome extension allows you to use your preferred LLM provider (OpenAI, or any OpenAI-compatible API) to translate text, analyze vocabulary, and more, directly within your browser.
 
 ## Features
