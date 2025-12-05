@@ -140,22 +140,30 @@ body {
   background: #fecaca;
 }
 
-.btn-icon {
-  padding: 8px;
+.llm-btn-icon {
+  padding: 6px;
   border-radius: var(--radius-md);
   color: var(--slate-500);
-  background: transparent;
-  border: none;
+  background: transparent !important; /* Force transparency */
+  border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.2s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  box-shadow: none !important; /* Remove any external shadows */
 }
 
-.btn-icon:hover {
-  background-color: var(--slate-100);
+.llm-btn-icon:hover {
+  background-color: var(--slate-100) !important;
   color: var(--primary-600);
+}
+
+.llm-btn-icon.llm-translator-close:hover {
+  background-color: #fee2e2 !important;
+  color: #ef4444;
 }
 
 /* Icons */
