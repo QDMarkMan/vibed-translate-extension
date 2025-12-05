@@ -650,20 +650,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Full Page Translation Logic
-async function translatePageContent() {
+function getTranslatableTextNodes() {
   const textNodes = [];
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
     acceptNode: function (node) {
-      if (node.parentElement.tagName === 'SCRIPT' ||
-        node.parentElement.tagName === 'STYLE' ||
-        node.parentElement.tagName === 'NOSCRIPT' ||
-        node.parentElement.isContentEditable ||
-        node.parentElement.closest('.llm-translator-popup') ||
-        node.parentElement.closest('.llm-translator-icon') ||
-        node.parentElement.closest('.llm-inline-translation')) {
+      const parent = node.parentElement;
+      if (!parent) return NodeFilter.FILTER_SKIP;
+      if (
+        parent.tagName === 'SCRIPT' ||
+        parent.tagName === 'STYLE' ||
+        parent.tagName === 'NOSCRIPT' ||
+        parent.isContentEditable ||
+        parent.closest('.llm-translator-popup') ||
+        parent.closest('.llm-translator-icon') ||
+        parent.closest('.llm-inline-translation')
+      ) {
         return NodeFilter.FILTER_REJECT;
       }
-      if (node.textContent.trim().length > 20) { // Only translate substantial text
+      if (node.textContent.trim().length > 20) {
         return NodeFilter.FILTER_ACCEPT;
       }
       return NodeFilter.FILTER_SKIP;
@@ -674,37 +678,68 @@ async function translatePageContent() {
     textNodes.push(walker.currentNode);
   }
 
-  // Process in chunks to avoid overwhelming the LLM
-  // For MVP, we'll just take the first 10 significant nodes to demonstrate
-  const nodesToTranslate = textNodes.slice(0, 10);
+  return textNodes;
+}
 
-  for (const node of nodesToTranslate) {
-    const originalText = node.textContent.trim();
-    try {
-      // Visual indicator that it's translating
-      node.parentElement.style.opacity = '0.5';
-
-      const response = await chrome.runtime.sendMessage({
-        action: "translateText",
-        text: originalText
-      });
-
-      if (response && response.success) {
-        // For full page, we just take the first successful result if multiple are returned
-        const resultText = Array.isArray(response.data)
-          ? response.data.find(r => !r.error)?.result || originalText
-          : response.data;
-
-        node.textContent = resultText;
-        node.parentElement.style.opacity = '1';
-        node.parentElement.dataset.originalText = originalText; // Store original
-      } else {
-        console.error("Translation failed for node:", originalText, response?.error);
-        node.parentElement.style.opacity = '1';
+function requestTranslation(text) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ action: "translateText", text }, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
       }
-    } catch (e) {
-      console.error(e);
-      node.parentElement.style.opacity = '1';
+      resolve(response);
+    });
+  });
+}
+
+async function translateTextNode(node) {
+  const parent = node.parentElement;
+  if (!parent) return;
+
+  const originalText = node.textContent.trim();
+  if (!originalText) return;
+
+  const previousOpacity = parent.style.opacity;
+  parent.style.opacity = '0.5';
+
+  try {
+    const response = await requestTranslation(originalText);
+
+    if (response && response.success) {
+      const resultText = Array.isArray(response.data)
+        ? response.data.find(r => !r.error)?.result || originalText
+        : response.data;
+
+      node.textContent = resultText;
+      parent.dataset.originalText = originalText; // Store original
+    } else {
+      console.error("Translation failed for node:", originalText, response?.error);
+    }
+  } catch (e) {
+    console.error("Translation error for node:", originalText, e);
+  } finally {
+    if (previousOpacity) {
+      parent.style.opacity = previousOpacity;
+    } else {
+      parent.style.removeProperty('opacity');
+    }
+  }
+}
+
+async function translatePageContent() {
+  const textNodes = getTranslatableTextNodes();
+  if (!textNodes.length) return;
+
+  const BATCH_SIZE = 4;
+  const BATCH_DELAY = 200;
+
+  for (let i = 0; i < textNodes.length; i += BATCH_SIZE) {
+    const chunk = textNodes.slice(i, i + BATCH_SIZE);
+    await Promise.all(chunk.map(node => translateTextNode(node)));
+
+    if (i + BATCH_SIZE < textNodes.length) {
+      await new Promise(resolve => setTimeout(resolve, BATCH_DELAY));
     }
   }
 }
