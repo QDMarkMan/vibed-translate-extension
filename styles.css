@@ -144,7 +144,8 @@ body {
   padding: 6px;
   border-radius: var(--radius-md);
   color: var(--slate-500);
-  background: transparent !important; /* Force transparency */
+  background: transparent !important;
+  /* Force transparency */
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.2s;
@@ -153,7 +154,8 @@ body {
   justify-content: center;
   min-width: 28px;
   min-height: 28px;
-  box-shadow: none !important; /* Remove any external shadows */
+  box-shadow: none !important;
+  /* Remove any external shadows */
 }
 
 .llm-btn-icon:hover {
@@ -277,13 +279,14 @@ body {
 /* Popup Container */
 .llm-translator-popup {
   position: absolute;
-  width: 380px;
-  background-color: var(--bg-card);
+  width: 350px;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
   z-index: var(--z-index-float);
   font-family: var(--font-sans);
-  border: 1px solid var(--slate-200);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -292,12 +295,12 @@ body {
 
 /* Popup Header */
 .llm-translator-header {
-  background: var(--slate-50);
-  padding: 12px 16px;
+  background: rgba(248, 250, 252, 0.8);
+  padding: 4px 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--slate-200);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   cursor: move;
   user-select: none;
 }
@@ -309,8 +312,8 @@ body {
 }
 
 .llm-header-icon {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   background: var(--primary-100);
   color: var(--primary-600);
   border-radius: var(--radius-md);
@@ -325,8 +328,8 @@ body {
 }
 
 .llm-header-title {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--slate-900);
   line-height: 1.2;
 }
@@ -343,19 +346,19 @@ body {
 
 /* Popup Body */
 .llm-translator-body {
-  padding: 16px;
-  max-height: 400px;
+  padding: 10px;
+  max-height: 320px;
   overflow-y: auto;
-  background: white;
+  background: transparent;
 }
 
 /* Result Cards */
 .llm-result-card {
-  background: var(--slate-50);
-  border: 1px solid var(--slate-200);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.04);
   border-radius: var(--radius-lg);
-  padding: 12px;
-  margin-bottom: 12px;
+  padding: 8px;
+  margin-bottom: 8px;
 }
 
 .llm-result-card:last-child {
@@ -376,8 +379,8 @@ body {
 }
 
 .llm-result-content {
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.5;
   color: var(--slate-800);
   white-space: pre-wrap;
 }

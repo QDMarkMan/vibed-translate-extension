@@ -228,9 +228,27 @@ function globeSvg() {
 }
 
 function inlineSvg() {
+  // return `
+  // <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-waves-ladder-icon lucide-waves-ladder"><path d="M19 5a2 2 0 0 0-2 2v11"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M7 13h10"/><path d="M7 9h10"/><path d="M9 5a2 2 0 0 0-2 2v11"/></svg>
+  // `;
   return `
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-waves-ladder-icon lucide-waves-ladder"><path d="M19 5a2 2 0 0 0-2 2v11"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M7 13h10"/><path d="M7 9h10"/><path d="M9 5a2 2 0 0 0-2 2v11"/></svg>
-  `;
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 18C2.6 18.5 3.2 19 4.5 19C7 19 7 17 9.5 17C12.1 17 11.9 19 14.5 19C17 19 17 17 19.5 17C20.8 17 21.4 17.5 22 18" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <g clip-path="url(#clip0_556_5)">
+    <path d="M7.125 6L10.875 9.75" stroke="black" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M6.5 9.75L10.25 6L11.5 4.125" stroke="black" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M5.25 4.125H12.75" stroke="black" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M8.375 2.25H9" stroke="black" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M17.75 14.75L14.625 8.5L11.5 14.75" stroke="black" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12.75 12.25H16.5" stroke="black" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <defs>
+    <clipPath id="clip0_556_5">
+    <rect width="15" height="15" fill="white" transform="translate(4 1)"/>
+    </clipPath>
+    </defs>
+  </svg>
+  `
 }
 
 // Create the floating icon element
@@ -242,16 +260,15 @@ function createFloatingIcon() {
   const popupIcon = document.createElement('div');
   popupIcon.className = 'llm-translator-icon';
   popupIcon.setAttribute('aria-label', 'Translate selection');
-  popupIcon.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
-  `;
+  popupIcon.innerHTML = globeSvg();
 
   const inlineIcon = document.createElement('div');
   inlineIcon.className = 'llm-translator-icon';
   inlineIcon.setAttribute('aria-label', 'Inline translate');
-  inlineIcon.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5a2 2 0 0 0-2 2v11"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M7 13h10"/><path d="M7 9h10"/><path d="M9 5a2 2 0 0 0-2 2v11"/></svg>
-  `;
+  // inlineIcon.innerHTML = `
+  //   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5a2 2 0 0 0-2 2v11"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M7 13h10"/><path d="M7 9h10"/><path d="M9 5a2 2 0 0 0-2 2v11"/></svg>
+  // `;
+  inlineIcon.innerHTML = inlineSvg();
 
   wrapper.appendChild(popupIcon);
   wrapper.appendChild(inlineIcon);
@@ -582,6 +599,15 @@ document.addEventListener('mouseup', (e) => {
     }
   }, 10);
 }, true); // Use capture to ensure we get the event
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    hideTranslationPopup();
+    if (inlineTranslationEl) {
+      removeInlineTranslation(inlineTranslationEl);
+    }
+  }
+});
 
 // Handle messages from background and popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
