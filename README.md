@@ -12,6 +12,7 @@ Translate web pages, PDF viewer text, and highlight vocabulary using the power o
 
 - **Context Menu Translation**: Select any text, right-click, and choose "Translate" to get an instant translation in a draggable popup.
 - **Floating Action Icon**: Select text and click the floating icon for quick access to translation.
+- **Floating Vocab Highlight**: Use the floating icon to instantly highlight advanced words in the current selection.
 - **Inline Translation**: Optionally display translations directly inline with the text for a seamless reading experience.
 - **Multi-Model Support**: Configure multiple LLM providers and models. Compare results or use different models for different tasks.
 - **Vocabulary Highlighting**: (Experimental) Analyze and highlight advanced vocabulary (CEFR B2/C1/C2) on the page with definitions.

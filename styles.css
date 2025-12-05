@@ -517,6 +517,26 @@ body {
   font-size: 0.9em;
 }
 
+.llm-vocab-selection-wrapper {
+  display: contents;
+}
+
+.llm-vocab-inline-loading {
+  position: absolute;
+  width: 4px;
+  background: #E879F9;
+  border-radius: var(--radius-full);
+  animation: llm-vocab-pulse 1s ease-in-out infinite alternate;
+  z-index: var(--z-index-float);
+  pointer-events: none;
+  box-shadow: 0 0 8px rgba(232, 121, 249, 0.35);
+}
+
+@keyframes llm-vocab-pulse {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
 .llm-tooltip-title {
   display: block;
   font-weight: 700;

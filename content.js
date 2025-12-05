@@ -457,6 +457,15 @@ function captureSelectionIfNeeded() {
   }
 }
 
+function getSelectionRange() {
+  const selection = window.getSelection();
+  if (selection && selection.rangeCount > 0 && selection.toString().trim()) {
+    return selection.getRangeAt(0).cloneRange();
+  }
+  if (lastSelectionRange) return lastSelectionRange.cloneRange();
+  return null;
+}
+
 function showFloatingIcon(rect) {
   if (!floatingIcon) floatingIcon = createFloatingIcon();
   captureSelectionIfNeeded();
@@ -673,6 +682,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     translatePageContent();
   }
 
+  if (request.action === "highlightSelectionVocab") {
+    highlightSelectionVocab(request.text);
+  }
+
   if (request.action === "highlightVocab") {
     highlightPageVocab();
   }
@@ -774,6 +787,109 @@ async function translatePageContent() {
 }
 
 // Vocabulary Highlighting Logic
+function escapeHtml(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function buildHighlightedNode(text, vocabList) {
+  if (!text || !vocabList || !vocabList.length) return null;
+  const words = vocabList
+    .filter(item => item && item.word)
+    .sort((a, b) => (b.word || '').length - (a.word || '').length);
+
+  let html = text;
+  words.forEach(item => {
+    const safeTranslation = escapeHtml(item.translation || '');
+    const safeDefinition = escapeHtml(item.definition || '');
+    if (!item.word) return;
+    const regex = new RegExp(`\\b${escapeRegExp(item.word)}\\b`, 'gi');
+    html = html.replace(regex, (match) => {
+      return `<span class="llm-vocab-highlight">${match}<span class="llm-inline-vocab"> (${safeTranslation})</span><span class="llm-vocab-tooltip"><span class="llm-tooltip-title">${safeTranslation}</span><span class="llm-tooltip-def">${safeDefinition}</span></span></span>`;
+    });
+  });
+
+  if (html === text) return null;
+  const span = document.createElement('span');
+  span.innerHTML = html;
+  return span;
+}
+
+function applyHighlightToFragment(fragment, vocabList) {
+  const walker = document.createTreeWalker(fragment, NodeFilter.SHOW_TEXT, null);
+  const replacements = [];
+
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    const replacement = buildHighlightedNode(node.textContent, vocabList);
+    if (replacement) {
+      replacements.push({ node, replacement });
+    }
+  }
+
+  replacements.forEach(({ node, replacement }) => {
+    if (node.parentNode) {
+      node.parentNode.replaceChild(replacement, node);
+    }
+  });
+
+  return fragment;
+}
+
+async function highlightSelectionVocab(selectedText) {
+  const text = (selectedText || getActiveSelectionText()).trim();
+  const range = getSelectionRange();
+  if (!text || !range) return;
+
+  const rect = range.getBoundingClientRect();
+  const indicator = document.createElement('div');
+  indicator.className = 'llm-vocab-inline-loading';
+  indicator.style.top = `${rect.top + window.scrollY}px`;
+  indicator.style.left = `${rect.left + window.scrollX - 6}px`;
+  indicator.style.height = `${rect.height}px`;
+  document.body.appendChild(indicator);
+
+  const fragment = range.extractContents();
+  const fragmentForHighlight = fragment.cloneNode(true);
+  const fragmentForFallback = fragment.cloneNode(true);
+
+  const wrapper = document.createElement('span');
+  wrapper.className = 'llm-vocab-selection-wrapper';
+  wrapper.appendChild(fragment);
+  range.insertNode(wrapper);
+
+  try {
+    const response = await chrome.runtime.sendMessage({
+      action: "analyzeVocab",
+      text
+    });
+
+    if (!response || !response.success || !Array.isArray(response.data) || !response.data.length) {
+      wrapper.replaceChildren(fragmentForFallback);
+      return;
+    }
+
+    const highlightedFragment = applyHighlightToFragment(fragmentForHighlight, response.data);
+    if (highlightedFragment && highlightedFragment.childNodes.length) {
+      wrapper.replaceChildren(highlightedFragment);
+    } else {
+      wrapper.replaceChildren(fragmentForFallback);
+    }
+  } catch (e) {
+    console.error("Selection vocab analysis failed:", e);
+    wrapper.replaceChildren(fragmentForFallback);
+  } finally {
+    if (indicator && indicator.parentNode) {
+      indicator.parentNode.removeChild(indicator);
+    }
+  }
+}
+
 async function highlightPageVocab() {
   // We'll target paragraphs (p tags) for vocab highlighting to keep context
   const paragraphs = Array.from(document.querySelectorAll('p'));
