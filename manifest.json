@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "LLM Translator",
+  "name": "YourLingo",
   "version": "1.0.0",
-  "description": "Translate web pages and highlight vocabulary using LLMs.",
+  "description": "YourLingo: translate web pages and PDFs, highlight vocabulary using your favorite LLMs.",
   "permissions": [
     "activeTab",
     "storage",
@@ -25,7 +25,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "LLM Translator"
+    "default_title": "YourLingo"
   },
   "icons": {
     "16": "icons/icon16.png",

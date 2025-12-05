@@ -1,4 +1,4 @@
-/* Styles for LLM Translator Extension */
+/* Styles for YourLingo Extension */
 
 :root {
   /* Color Palette - Premium Blue Theme */
@@ -577,4 +577,100 @@ body {
 
 .mb-4 {
   margin-bottom: 16px;
+}
+
+/* --- Extension Popup Specifics --- */
+
+body.extension-popup {
+  width: 230px;
+  padding: 8px;
+  background-color: var(--bg-body);
+}
+
+.extension-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.extension-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  object-fit: cover;
+}
+
+.extension-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--slate-900);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.extension-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-lg);
+  color: var(--slate-700);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  text-align: left;
+  margin-bottom: 2px;
+}
+
+.menu-item:hover {
+  background-color: var(--slate-100);
+  color: var(--slate-900);
+  transform: translateX(4px);
+}
+
+.menu-item:active {
+  background-color: var(--slate-200);
+  transform: translateX(2px) scale(0.98);
+}
+
+.menu-item svg {
+  width: 15px;
+  height: 15px;
+  color: var(--slate-500);
+  transition: color 0.2s;
+}
+
+.menu-item:hover svg {
+  color: var(--primary-600);
+}
+
+.menu-item.primary {
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  color: var(--primary-700);
+  border: 1px solid var(--primary-200);
+}
+
+.menu-item.primary:hover {
+  background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
+  box-shadow: var(--shadow-sm);
+  transform: translateX(4px) translateY(-1px);
+}
+
+.menu-item.primary svg {
+  color: var(--primary-600);
 }

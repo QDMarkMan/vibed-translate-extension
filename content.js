@@ -1,4 +1,4 @@
-// Content script for LLM Translator
+// Content script for YourLingo
 
 let lastSelectionRange = null;
 let floatingIcon = null;
@@ -251,6 +251,18 @@ function inlineSvg() {
   `
 }
 
+function vocabSvg() {
+  return `
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19.5V5a2 2 0 0 1 2-2h9.5a2 2 0 0 1 2 2v10.5"/>
+      <path d="M6 7h10"/>
+      <path d="M6 11h7"/>
+      <path d="m8 21 4.8-3.2c.8-.6 1.8-.8 2.7-.4l4.5 1.9"/>
+      <path d="m16 20 2-3"/>
+    </svg>
+  `;
+}
+
 // Create the floating icon element
 function createFloatingIcon() {
   const wrapper = document.createElement('div');
@@ -270,8 +282,14 @@ function createFloatingIcon() {
   // `;
   inlineIcon.innerHTML = inlineSvg();
 
+  const vocabIcon = document.createElement('div');
+  vocabIcon.className = 'llm-translator-icon';
+  vocabIcon.setAttribute('aria-label', 'Highlight vocab');
+  vocabIcon.innerHTML = vocabSvg();
+
   wrapper.appendChild(popupIcon);
   wrapper.appendChild(inlineIcon);
+  wrapper.appendChild(vocabIcon);
   document.body.appendChild(wrapper);
 
   popupIcon.addEventListener('click', (e) => {
@@ -292,8 +310,19 @@ function createFloatingIcon() {
     hideFloatingIcon();
   });
 
+  vocabIcon.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    captureSelectionIfNeeded();
+    const text = getActiveSelectionText();
+    if (text) {
+      highlightSelectionVocab(text);
+    }
+    hideFloatingIcon();
+  });
+
   // Prevent mouseup from clearing selection
-  [popupIcon, inlineIcon].forEach(icon => {
+  [popupIcon, inlineIcon, vocabIcon].forEach(icon => {
     icon.addEventListener('mousedown', (e) => {
       e.preventDefault();
       e.stopPropagation();
