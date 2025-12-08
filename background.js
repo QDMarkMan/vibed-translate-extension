@@ -119,8 +119,13 @@ async function translateText(text) {
   const translationPrompt = settings.translationPrompt?.trim() ||
     `You are a professional translator. Translate the following text into ${settings.targetLang}. Only provide the translation, no explanations.`;
 
-  if (settings.models.length === 0) {
-    throw new Error("No models configured. Please check extension settings.");
+  // Filter to only enabled models (models without 'enabled' property are considered enabled)
+  const enabledModels = settings.models.filter(m => m.enabled === undefined || m.enabled === true);
+
+  console.log('Translation - Total models:', settings.models.length, 'Enabled models:', enabledModels.length, enabledModels.map(m => m.modelName));
+
+  if (enabledModels.length === 0) {
+    throw new Error("No enabled models. Please check extension settings.");
   }
 
   const messages = [
@@ -134,8 +139,8 @@ async function translateText(text) {
     }
   ];
 
-  // Parallel execution for all configured models
-  const promises = settings.models.map(async (model) => {
+  // Parallel execution for all enabled models
+  const promises = enabledModels.map(async (model) => {
     try {
       const result = await callLLM(model, messages);
       return { modelName: model.modelName, result: result };
@@ -150,17 +155,20 @@ async function translateText(text) {
 async function analyzeVocab(text) {
   const settings = await getSettings();
 
-  if (settings.models.length === 0) {
-    throw new Error("No models configured.");
+  // Filter to only enabled models (models without 'enabled' property are considered enabled)
+  const enabledModels = settings.models.filter(m => m.enabled === undefined || m.enabled === true);
+
+  if (enabledModels.length === 0) {
+    throw new Error("No enabled models.");
   }
 
-  // Use the first model for vocab analysis to avoid redundancy
-  const primaryModel = settings.models[0];
+  // Use the first enabled model for vocab analysis
+  const primaryModel = enabledModels[0];
 
   // Prompt for vocabulary extraction
   const prompt = (settings.vocabPrompt?.trim() || `
 Identify advanced or difficult vocabulary (CEFR B2/C1/C2 level) in the following text. 
-For each word, provide the translation in ${settings.targetLang} and a brief definition.
+For each word, provide the translation in ${settings.targetLang} and a brief definition by current text context.
 Return the result as a valid JSON array of objects with keys: "word", "translation", "definition".
 If no advanced words are found, return an empty array [].
 Do not include markdown formatting like \`\`\`json. Just the raw JSON string.

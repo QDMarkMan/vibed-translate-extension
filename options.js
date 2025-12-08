@@ -18,9 +18,10 @@ const saveOptions = () => {
     const apiUrl = item.querySelector('.model-url').value;
     const apiKey = item.querySelector('.model-key').value;
     const modelName = item.querySelector('.model-name').value;
+    const enabled = item.querySelector('.model-enabled').checked;
 
     if (apiKey && modelName) { // Only save if key and name are present
-      models.push({ provider, apiUrl, apiKey, modelName });
+      models.push({ provider, apiUrl, apiKey, modelName, enabled });
     }
   });
 
@@ -43,6 +44,7 @@ const createModelElement = (modelData = {}) => {
   const clone = template.content.cloneNode(true);
   const item = clone.querySelector('.model-item');
 
+  const enabledCheckbox = item.querySelector('.model-enabled');
   const providerSelect = item.querySelector('.model-provider');
   const urlInput = item.querySelector('.model-url');
   const keyInput = item.querySelector('.model-key');
@@ -50,12 +52,22 @@ const createModelElement = (modelData = {}) => {
   const removeBtn = item.querySelector('.remove-btn');
 
   // Set values
+  enabledCheckbox.checked = modelData.enabled !== false; // Default to enabled
   providerSelect.value = modelData.provider || 'openai';
   urlInput.value = modelData.apiUrl || 'https://api.openai.com/v1/chat/completions';
   keyInput.value = modelData.apiKey || '';
   nameInput.value = modelData.modelName || 'gpt-3.5-turbo';
 
+  // Update visual state
+  if (!enabledCheckbox.checked) {
+    item.classList.add('disabled');
+  }
+
   // Event listeners
+  enabledCheckbox.addEventListener('change', () => {
+    item.classList.toggle('disabled', !enabledCheckbox.checked);
+  });
+
   removeBtn.addEventListener('click', () => {
     item.remove();
   });
