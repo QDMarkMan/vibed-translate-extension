@@ -451,7 +451,7 @@ body {
 
 /* Vocabulary Highlighting */
 .llm-vocab-highlight {
-  background-color: var(--primary-100);
+  /* background-color: var(--primary-100); */
   border-bottom: 2px solid var(--primary-500);
   cursor: help;
   border-radius: 4px;
@@ -466,7 +466,7 @@ body {
 }
 
 .llm-vocab-highlight:hover {
-  background-color: var(--primary-200);
+  background-color: var(--primary-100);
 }
 
 .llm-vocab-tooltip {
@@ -533,8 +533,13 @@ body {
 }
 
 @keyframes llm-vocab-pulse {
-  from { opacity: 0.4; }
-  to { opacity: 1; }
+  from {
+    opacity: 0.4;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .llm-tooltip-title {
